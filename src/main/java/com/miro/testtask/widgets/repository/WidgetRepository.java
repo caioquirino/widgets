@@ -6,7 +6,10 @@ import java.util.List;
 
 public interface WidgetRepository {
   List<WidgetModel> getAll();
+
   WidgetModel create(WidgetModel widgetModel);
+
   WidgetModel update(WidgetModel widgetModel);
+
   void delete(WidgetModel widgetModel);
 }
