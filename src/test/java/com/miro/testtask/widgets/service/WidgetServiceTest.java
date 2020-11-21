@@ -23,27 +23,27 @@ class WidgetServiceTest {
   }
 
   @Test
-  void getAll() {
+  void findAll() {
     var widgetList = List.of(
         WidgetModel.builder()
             .coordinate(Coordinate.builder().x(1).y(2).build())
             .height(10)
             .width(100)
-            .zIndex(1)
+            .zindex(1)
             .id(1)
             .build(),
         WidgetModel.builder()
             .coordinate(Coordinate.builder().x(3).y(4).build())
             .height(10)
             .width(100)
-            .zIndex(2)
+            .zindex(2)
             .id(2)
             .build()
     );
 
-    when(widgetRepository.getAll()).thenReturn(widgetList);
+    when(widgetRepository.findAll()).thenReturn(widgetList);
 
-    var result = widgetService.getAll();
+    var result = widgetService.findAll();
 
     assertEquals(widgetList, result);
   }
@@ -54,7 +54,7 @@ class WidgetServiceTest {
         .coordinate(Coordinate.builder().x(1).y(2).build())
         .height(10)
         .width(100)
-        .zIndex(1)
+        .zindex(1)
         .build();
 
     when(widgetRepository.create(widget)).thenReturn(widget.toBuilder().id(1).build());
@@ -70,7 +70,7 @@ class WidgetServiceTest {
         .coordinate(Coordinate.builder().x(1).y(2).build())
         .height(10)
         .width(100)
-        .zIndex(1)
+        .zindex(1)
         .id(1)
         .build();
 
@@ -87,7 +87,7 @@ class WidgetServiceTest {
         .coordinate(Coordinate.builder().x(1).y(2).build())
         .height(10)
         .width(100)
-        .zIndex(1)
+        .zindex(1)
         .id(1)
         .build();
 

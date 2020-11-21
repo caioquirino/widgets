@@ -18,14 +18,14 @@ class InMemoryWidgetRepositoryTest {
           .coordinate(Coordinate.builder().x(1).y(2).build())
           .height(10)
           .width(100)
-          .zIndex(1)
+          .zindex(1)
           .id(1)
           .build(),
       WidgetModel.builder()
           .coordinate(Coordinate.builder().x(3).y(4).build())
           .height(10)
           .width(100)
-          .zIndex(2)
+          .zindex(5)
           .id(2)
           .build()
   );
@@ -36,8 +36,8 @@ class InMemoryWidgetRepositoryTest {
   }
 
   @Test
-  void getAll() {
-    assertEquals(widgetFixture, repository.getAll());
+  void findAll() {
+    assertEquals(widgetFixture, repository.findAll());
   }
 
   @Test
@@ -49,10 +49,10 @@ class InMemoryWidgetRepositoryTest {
             .coordinate(Coordinate.builder().x(4).y(5).build())
             .height(30)
             .width(300)
-            .zIndex(3)
+            .zindex(3)
             .build();
 
-    assertEquals(0, repository.getAll().size());
+    assertEquals(0, repository.findAll().size());
 
     var result = repository.create(widget);
     assertEquals(
@@ -74,26 +74,31 @@ class InMemoryWidgetRepositoryTest {
 
   @Test
   void delete() {
-    assertEquals(2, repository.getAll().size());
+    assertEquals(2, repository.findAll().size());
 
     var widget = this.widgetFixture.get(0);
 
     repository.delete(widget);
 
-    assertEquals(1, repository.getAll().size());
+    assertEquals(1, repository.findAll().size());
   }
 
   @Test
   void setupWithDuplicatedItems() {
     repository = new InMemoryWidgetRepository(
         List.of(
-            this.widgetFixture.get(0).toBuilder().zIndex(1).build(),
-            this.widgetFixture.get(0).toBuilder().zIndex(2).build()
+            this.widgetFixture.get(0).toBuilder().zindex(1).build(),
+            this.widgetFixture.get(0).toBuilder().zindex(2).build()
         )
     );
 
     assertEquals(List.of(
-        this.widgetFixture.get(0).toBuilder().zIndex(2).build()
-    ), repository.getAll());
+        this.widgetFixture.get(0).toBuilder().zindex(2).build()
+    ), repository.findAll());
+  }
+
+  @Test
+  void maximumzindex() {
+    assertEquals(5, repository.maximumzindex());
   }
 }

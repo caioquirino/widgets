@@ -34,10 +34,11 @@ public class WidgetControllerIntegrationTest {
   @AfterEach
   public void cleanup() {
     ((Cleaner.Cleanable)widgetRepository).clean();
+    assertEquals(0, widgetRepository.findAll().size());
   }
 
   @Test
-  public void testGetAllWithEmptyEntity() throws Exception {
+  public void testFindAllWithEmptyEntity() throws Exception {
     mockMvc.perform(get("/v1/widget/list"))
         .andExpect(content().string("[]"))
         .andExpect(status().isOk());
@@ -49,12 +50,12 @@ public class WidgetControllerIntegrationTest {
         .coordinate(Coordinate.builder().x(4).y(5).build())
         .height(30)
         .width(300)
-        .zIndex(3)
+        .zindex(3)
         .build();
 
     var expectation = widget.toBuilder().id(1).build();
 
-    var currentSize = widgetRepository.getAll().size();
+    var currentSize = widgetRepository.findAll().size();
 
     mockMvc.perform(
         post("/v1/widget")
@@ -64,8 +65,8 @@ public class WidgetControllerIntegrationTest {
         .andExpect(content().string(objectMapper.writeValueAsString(expectation)))
         .andExpect(status().isOk());
 
-    assertEquals(currentSize + 1, widgetRepository.getAll().size());
-    assertEquals(expectation, widgetRepository.getAll().get(0));
+    assertEquals(currentSize + 1, widgetRepository.findAll().size());
+    assertEquals(expectation, widgetRepository.findAll().get(0));
   }
 
   @Test
@@ -74,12 +75,12 @@ public class WidgetControllerIntegrationTest {
         .coordinate(Coordinate.builder().x(4).y(5).build())
         .height(30)
         .width(300)
-        .zIndex(3)
+        .zindex(3)
         .build());
 
     var newWidgetVersion = widget.toBuilder().height(500).build();
 
-    var currentSize = widgetRepository.getAll().size();
+    var currentSize = widgetRepository.findAll().size();
 
     mockMvc.perform(
         patch("/v1/widget")
@@ -89,8 +90,8 @@ public class WidgetControllerIntegrationTest {
         .andExpect(content().string(objectMapper.writeValueAsString(newWidgetVersion)))
         .andExpect(status().isOk());
 
-    assertEquals(currentSize, widgetRepository.getAll().size());
-    assertEquals(newWidgetVersion, widgetRepository.getAll().get(0));
+    assertEquals(currentSize, widgetRepository.findAll().size());
+    assertEquals(newWidgetVersion, widgetRepository.findAll().get(0));
   }
 
   @Test
@@ -99,10 +100,10 @@ public class WidgetControllerIntegrationTest {
         .coordinate(Coordinate.builder().x(4).y(5).build())
         .height(30)
         .width(300)
-        .zIndex(3)
+        .zindex(3)
         .build());
 
-    var expectedSize = widgetRepository.getAll().size() -1;
+    var expectedSize = widgetRepository.findAll().size() -1;
 
     mockMvc.perform(
         delete("/v1/widget")
@@ -111,6 +112,6 @@ public class WidgetControllerIntegrationTest {
     )
         .andExpect(status().isOk());
 
-    assertEquals(expectedSize, widgetRepository.getAll().size());
+    assertEquals(expectedSize, widgetRepository.findAll().size());
   }
 }

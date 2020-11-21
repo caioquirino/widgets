@@ -16,8 +16,8 @@ public class WidgetService {
     this.repository = repository;
   }
 
-  public List<WidgetModel> getAll() {
-    return repository.getAll();
+  public List<WidgetModel> findAll() {
+    return repository.findAll();
   }
 
   public WidgetModel create(WidgetModel widgetModel) {

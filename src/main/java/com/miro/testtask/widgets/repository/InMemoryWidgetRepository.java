@@ -18,6 +18,7 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
 
   public InMemoryWidgetRepository(List<WidgetModel> widgetModelList) {
     this.lastId = widgetModelList.stream().map(WidgetModel::getId).max(Long::compareTo).orElse(0L);
+
     this.widgetModelMap = widgetModelList.stream().collect(Collectors.toMap(WidgetModel::getId, Function.identity(),
         (previousWidget, newWidget) -> newWidget, TreeMap::new));
   }
@@ -34,7 +35,7 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
   }
 
   @Override
-  public List<WidgetModel> getAll() {
+  public List<WidgetModel> findAll() {
     return List.copyOf(this.widgetModelMap.values());
   }
 
@@ -48,7 +49,13 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
   @Override
   public WidgetModel update(WidgetModel widgetModel) {
     this.widgetModelMap.put(widgetModel.getId(), widgetModel);
+
     return widgetModel;
+  }
+
+  @Override
+  public int maximumzindex() {
+    return this.widgetModelMap.values().stream().map(WidgetModel::getZindex).max(Integer::compareTo).orElse(0);
   }
 
   @Override

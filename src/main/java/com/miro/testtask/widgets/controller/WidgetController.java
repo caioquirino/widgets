@@ -26,8 +26,8 @@ public class WidgetController {
   }
 
   @RequestMapping(path = "/v1/widget/list")
-  public List<WidgetModel> getAll() {
-    return widgetService.getAll();
+  public List<WidgetModel> findAll() {
+    return widgetService.findAll();
   }
 
   @RequestMapping(path = "/v1/widget", method = RequestMethod.PATCH)

@@ -10,8 +10,8 @@ import lombok.Data;
 public class WidgetModel {
   private long id;
 
-  private Coordinate coordinate;
-  private int zIndex;
-  private int width;
-  private int height;
+  private final Coordinate coordinate;
+  private final int zindex;
+  private final int width;
+  private final int height;
 }
