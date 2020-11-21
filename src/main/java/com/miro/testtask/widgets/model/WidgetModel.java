@@ -8,7 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class WidgetModel {
-  private int id;
+  private long id;
 
   private Coordinate coordinate;
   private int zIndex;

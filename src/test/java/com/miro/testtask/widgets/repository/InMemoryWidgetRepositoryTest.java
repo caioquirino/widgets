@@ -13,41 +13,46 @@ class InMemoryWidgetRepositoryTest {
 
   private InMemoryWidgetRepository repository;
 
+  private final List<WidgetModel> widgetFixture = List.of(
+      WidgetModel.builder()
+          .coordinate(Coordinate.builder().x(1).y(2).build())
+          .height(10)
+          .width(100)
+          .zIndex(1)
+          .id(1)
+          .build(),
+      WidgetModel.builder()
+          .coordinate(Coordinate.builder().x(3).y(4).build())
+          .height(10)
+          .width(100)
+          .zIndex(2)
+          .id(2)
+          .build()
+  );
+
   @BeforeEach
   public void setup() {
-    repository = new InMemoryWidgetRepository();
+    repository = new InMemoryWidgetRepository(widgetFixture);
   }
 
   @Test
   void getAll() {
-    var widgetList = List.of(
-        WidgetModel.builder()
-            .coordinate(Coordinate.builder().x(1).y(2).build())
-            .height(10)
-            .width(100)
-            .zIndex(1)
-            .id(1)
-            .build(),
-        WidgetModel.builder()
-            .coordinate(Coordinate.builder().x(3).y(4).build())
-            .height(10)
-            .width(100)
-            .zIndex(2)
-            .id(2)
-            .build()
-    );
-
-    assertEquals(widgetList, repository.getAll());
+    assertEquals(widgetFixture, repository.getAll());
   }
 
   @Test
   void create() {
-    var widget = WidgetModel.builder()
-        .coordinate(Coordinate.builder().x(3).y(4).build())
-        .height(10)
-        .width(100)
-        .zIndex(2)
-        .build();
+    repository = new InMemoryWidgetRepository();
+
+    var widget =
+        WidgetModel.builder()
+            .coordinate(Coordinate.builder().x(4).y(5).build())
+            .height(30)
+            .width(300)
+            .zIndex(3)
+            .build();
+
+    assertEquals(0, repository.getAll().size());
 
     var result = repository.create(widget);
     assertEquals(
@@ -58,13 +63,7 @@ class InMemoryWidgetRepositoryTest {
 
   @Test
   void update() {
-    var widget = WidgetModel.builder()
-        .coordinate(Coordinate.builder().x(3).y(4).build())
-        .height(10)
-        .width(100)
-        .zIndex(2)
-        .id(1)
-        .build();
+    var widget = this.widgetFixture.get(0);
 
     var result = repository.update(widget);
     assertEquals(
@@ -75,14 +74,26 @@ class InMemoryWidgetRepositoryTest {
 
   @Test
   void delete() {
-    var widget = WidgetModel.builder()
-        .coordinate(Coordinate.builder().x(3).y(4).build())
-        .height(10)
-        .width(100)
-        .zIndex(2)
-        .id(1)
-        .build();
+    assertEquals(2, repository.getAll().size());
+
+    var widget = this.widgetFixture.get(0);
 
     repository.delete(widget);
+
+    assertEquals(1, repository.getAll().size());
+  }
+
+  @Test
+  void setupWithDuplicatedItems() {
+    repository = new InMemoryWidgetRepository(
+        List.of(
+            this.widgetFixture.get(0).toBuilder().zIndex(1).build(),
+            this.widgetFixture.get(0).toBuilder().zIndex(2).build()
+        )
+    );
+
+    assertEquals(List.of(
+        this.widgetFixture.get(0).toBuilder().zIndex(2).build()
+    ), repository.getAll());
   }
 }
