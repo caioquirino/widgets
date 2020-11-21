@@ -3,6 +3,7 @@ package com.miro.testtask.widgets.service;
 import com.miro.testtask.widgets.model.Coordinate;
 import com.miro.testtask.widgets.model.WidgetModel;
 import com.miro.testtask.widgets.repository.WidgetRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,12 +13,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class WidgetServiceTest {
 
+  private final WidgetRepository widgetRepository = mock(WidgetRepository.class);
+
+  private final WidgetService widgetService = new WidgetService(widgetRepository);
+
+  @AfterEach
+  void cleanup() {
+    reset(widgetRepository);
+  }
+
   @Test
   void getAll() {
-    var widgetRepository = mock(WidgetRepository.class);
-
-    var widgetService = new WidgetService(widgetRepository);
-
     var widgetList = List.of(
         WidgetModel.builder()
             .coordinate(Coordinate.builder().x(1).y(2).build())
@@ -44,10 +50,6 @@ class WidgetServiceTest {
 
   @Test
   void create() {
-    var widgetRepository = mock(WidgetRepository.class);
-
-    var widgetService = new WidgetService(widgetRepository);
-
     var widget = WidgetModel.builder()
         .coordinate(Coordinate.builder().x(1).y(2).build())
         .height(10)
@@ -64,10 +66,6 @@ class WidgetServiceTest {
 
   @Test
   void update() {
-    var widgetRepository = mock(WidgetRepository.class);
-
-    var widgetService = new WidgetService(widgetRepository);
-
     var widget = WidgetModel.builder()
         .coordinate(Coordinate.builder().x(1).y(2).build())
         .height(10)
@@ -85,10 +83,6 @@ class WidgetServiceTest {
 
   @Test
   void delete() {
-    var widgetRepository = mock(WidgetRepository.class);
-
-    var widgetService = new WidgetService(widgetRepository);
-
     var widget = WidgetModel.builder()
         .coordinate(Coordinate.builder().x(1).y(2).build())
         .height(10)
