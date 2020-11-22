@@ -35,7 +35,7 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
   @Override
   public List<WidgetModel> findAll() {
     return List.copyOf(this.widgetModelMap.values())
-        .stream().sorted(Comparator.comparing(WidgetModel::getId)).collect(Collectors.toList());
+        .stream().sorted(Comparator.comparing(WidgetModel::getZindex)).collect(Collectors.toList());
   }
 
   @Override
