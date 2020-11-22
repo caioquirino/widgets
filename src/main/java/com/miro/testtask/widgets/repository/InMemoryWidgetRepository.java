@@ -4,9 +4,7 @@ import com.miro.testtask.widgets.model.WidgetModel;
 import org.springframework.stereotype.Repository;
 
 import java.lang.ref.Cleaner;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,7 +34,14 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
 
   @Override
   public List<WidgetModel> findAll() {
-    return List.copyOf(this.widgetModelMap.values());
+    return List.copyOf(this.widgetModelMap.values())
+        .stream().sorted(Comparator.comparing(WidgetModel::getId)).collect(Collectors.toList());
+  }
+
+  @Override
+  public Optional<WidgetModel> findByZindex(int zindex) {
+    return this.widgetModelMap.values()
+        .stream().filter(widgetModel -> widgetModel.getZindex().equals(zindex)).findFirst();
   }
 
   @Override
@@ -54,7 +59,7 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
   }
 
   @Override
-  public int maximumzindex() {
+  public int maximumZindex() {
     return this.widgetModelMap.values().stream().map(WidgetModel::getZindex).max(Integer::compareTo).orElse(0);
   }
 

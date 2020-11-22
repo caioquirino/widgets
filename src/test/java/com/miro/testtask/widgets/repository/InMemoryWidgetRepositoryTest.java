@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryWidgetRepositoryTest {
 
@@ -19,14 +19,14 @@ class InMemoryWidgetRepositoryTest {
           .height(10)
           .width(100)
           .zindex(1)
-          .id(1)
+          .id(1L)
           .build(),
       WidgetModel.builder()
           .coordinate(Coordinate.builder().x(3).y(4).build())
           .height(10)
           .width(100)
           .zindex(5)
-          .id(2)
+          .id(2L)
           .build()
   );
 
@@ -56,7 +56,7 @@ class InMemoryWidgetRepositoryTest {
 
     var result = repository.create(widget);
     assertEquals(
-        widget.toBuilder().id(1).build(),
+        widget.toBuilder().id(1L).build(),
         result
     );
   }
@@ -98,7 +98,20 @@ class InMemoryWidgetRepositoryTest {
   }
 
   @Test
-  void maximumzindex() {
-    assertEquals(5, repository.maximumzindex());
+  void maximumZindex() {
+    assertEquals(5, repository.maximumZindex());
+  }
+
+  @Test
+  void findByZindex() {
+    assertEquals(this.widgetFixture.get(0), repository.findByZindex(1).orElseThrow());
+    assertEquals(this.widgetFixture.get(1), repository.findByZindex(5).orElseThrow());
+  }
+
+  @Test
+  void clean() {
+    assertEquals(2, repository.findAll().size());
+    repository.clean();
+    assertEquals(0, repository.findAll().size());
   }
 }

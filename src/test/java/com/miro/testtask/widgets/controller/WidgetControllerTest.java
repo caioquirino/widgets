@@ -8,10 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 class WidgetControllerTest {
 
@@ -32,14 +31,14 @@ class WidgetControllerTest {
             .height(10)
             .width(100)
             .zindex(1)
-            .id(1)
+            .id(1L)
             .build(),
         WidgetModel.builder()
             .coordinate(Coordinate.builder().x(3).y(4).build())
             .height(10)
             .width(100)
             .zindex(2)
-            .id(2)
+            .id(2L)
             .build()
     );
 
@@ -59,7 +58,7 @@ class WidgetControllerTest {
         .zindex(1)
         .build();
 
-    when(widgetService.create(widget)).thenReturn(widget.toBuilder().id(1).build());
+    when(widgetService.create(widget)).thenReturn(widget.toBuilder().id(1L).build());
 
     var createdWidget = widgetController.create(widget);
 
@@ -73,10 +72,10 @@ class WidgetControllerTest {
         .height(10)
         .width(100)
         .zindex(1)
-        .id(1)
+        .id(1L)
         .build();
 
-    when(widgetService.update(widget)).thenReturn(widget.toBuilder().id(1).build());
+    when(widgetService.update(widget)).thenReturn(widget.toBuilder().id(1L).build());
 
     var createdWidget = widgetController.update(widget);
 
@@ -90,7 +89,7 @@ class WidgetControllerTest {
         .height(10)
         .width(100)
         .zindex(1)
-        .id(1)
+        .id(1L)
         .build();
 
     widgetController.delete(widget);
