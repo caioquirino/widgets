@@ -12,6 +12,8 @@ public interface WidgetRepository {
 
   WidgetModel create(WidgetModel widgetModel);
 
+  Optional<WidgetModel> findById(long id);
+
   WidgetModel update(WidgetModel widgetModel);
 
 

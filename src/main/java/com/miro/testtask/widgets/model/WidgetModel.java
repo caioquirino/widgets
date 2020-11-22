@@ -10,6 +10,8 @@ import org.springframework.lang.NonNull;
 @Builder(toBuilder = true)
 public class WidgetModel {
 
+  private final Long id;
+
   private final Integer zindex;
   @NonNull
   private final Coordinate coordinate;
@@ -17,5 +19,4 @@ public class WidgetModel {
   private final int width;
   @NonNull
   private final int height;
-  private Long id;
 }

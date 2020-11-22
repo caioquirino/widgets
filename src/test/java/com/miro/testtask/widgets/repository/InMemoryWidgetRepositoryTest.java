@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class InMemoryWidgetRepositoryTest {
 
@@ -73,6 +74,13 @@ class InMemoryWidgetRepositoryTest {
   }
 
   @Test
+  void updateToFailIfZindexIsDuplicated() {
+    var widget = this.widgetFixture.get(0).toBuilder().zindex(this.widgetFixture.get(1).getZindex()).build();
+
+    assertThrows(DuplicatedZindexException.class, () -> repository.update(widget));
+  }
+
+  @Test
   void delete() {
     assertEquals(2, repository.findAll().size());
 
@@ -84,17 +92,27 @@ class InMemoryWidgetRepositoryTest {
   }
 
   @Test
-  void setupWithDuplicatedItems() {
-    repository = new InMemoryWidgetRepository(
-        List.of(
-            this.widgetFixture.get(0).toBuilder().zindex(1).build(),
-            this.widgetFixture.get(0).toBuilder().zindex(2).build()
+  void setupWithDuplicatedZindex() {
+    assertThrows(DuplicatedZindexException.class, () ->
+        new InMemoryWidgetRepository(
+            List.of(
+                this.widgetFixture.get(0).toBuilder().zindex(1).build(),
+                this.widgetFixture.get(0).toBuilder().zindex(2).build()
+            )
         )
     );
+  }
 
-    assertEquals(List.of(
-        this.widgetFixture.get(0).toBuilder().zindex(2).build()
-    ), repository.findAll());
+  @Test
+  void setupWithDuplicatedId() {
+    assertThrows(DuplicatedZindexException.class, () ->
+        new InMemoryWidgetRepository(
+            List.of(
+                this.widgetFixture.get(1).toBuilder().id(2L).build(),
+                this.widgetFixture.get(1).toBuilder().id(2L).build()
+            )
+        )
+    );
   }
 
   @Test
