@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.lang.ref.Cleaner;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,13 +51,6 @@ public class WidgetControllerIntegrationTest {
     mockMvc.perform(get("/v1/widget/list"))
         .andExpect(content().string("[]"))
         .andExpect(status().isOk());
-  }
-
-  private static List<Expectation> buildExpectations(List<Integer> zindexList) {
-    AtomicLong index = new AtomicLong(0L);
-    return zindexList.stream()
-        .map(x -> new Expectation(index.incrementAndGet(), x))
-        .collect(Collectors.toList());
   }
 
   @Test
@@ -106,14 +99,6 @@ public class WidgetControllerIntegrationTest {
     assertEquals(expectedSize, widgetRepository.findAll().size());
   }
 
-  private static Stream<Arguments> provideStringsForIsBlank() {
-    return List.of(
-        new WidgetServiceScenario(List.of(1, 2, 3), 2, buildExpectations(List.of(1, 3, 4, 2))),
-        new WidgetServiceScenario(List.of(1, 5, 6), 2, buildExpectations(List.of(1, 5, 6, 2))),
-        new WidgetServiceScenario(List.of(1, 2, 4), 2, buildExpectations(List.of(1, 3, 4, 2)))
-    ).stream().map(Arguments::of);
-  }
-
   @Test
   public void testAddWidget() throws Exception {
     WidgetModel widget = WidgetModel.builder()
@@ -139,9 +124,24 @@ public class WidgetControllerIntegrationTest {
     assertEquals(expectation, widgetRepository.findAll().get(0));
   }
 
+
+  private static List<Expectation> buildExpectations(List<Integer> zindexList, List<Long> idList) {
+    return IntStream.range(0, zindexList.size())
+        .mapToObj(x -> new Expectation(idList.get(x), zindexList.get(x)))
+        .collect(Collectors.toList());
+  }
+
+  private static Stream<Arguments> zindexSlideScenario() {
+    return List.of(
+        new WidgetServiceScenario(List.of(1, 2, 3), 2, buildExpectations(List.of(1, 2, 3, 4), List.of(1L, 4L, 2L, 3L))),
+        new WidgetServiceScenario(List.of(1, 5, 6), 2, buildExpectations(List.of(1, 2, 5, 6), List.of(1L, 4L, 2L, 3L))),
+        new WidgetServiceScenario(List.of(1, 2, 4), 2, buildExpectations(List.of(1, 2, 3, 4), List.of(1L, 4L, 2L, 3L)))
+    ).stream().map(Arguments::of);
+  }
+
   @ParameterizedTest
-  @MethodSource("provideStringsForIsBlank")
-  void isOdd_ShouldReturnTrueForOddNumbers(WidgetServiceScenario scenario) throws Exception {
+  @MethodSource("zindexSlideScenario")
+  void testZindexSlide(WidgetServiceScenario scenario) throws Exception {
     scenario.given.forEach(x -> this.widgetRepository.create(WidgetModel.builder()
         .coordinate(Coordinate.builder().x(1).y(2).build())
         .height(10)
