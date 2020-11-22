@@ -128,7 +128,7 @@ public class WidgetControllerIntegrationTest {
   private static List<Expectation> buildExpectations(List<Integer> zindexList, List<Long> idList) {
     return IntStream.range(0, zindexList.size())
         .mapToObj(x -> new Expectation(idList.get(x), zindexList.get(x)))
-        .collect(Collectors.toList());
+        .collect(Collectors.toUnmodifiableList());
   }
 
   private static Stream<Arguments> zindexSlideScenario() {
@@ -168,7 +168,7 @@ public class WidgetControllerIntegrationTest {
 
     var result = this.widgetRepository.findAll()
         .stream().map(x -> new Expectation(x.getId(), x.getZindex()))
-        .collect(Collectors.toList());
+        .collect(Collectors.toUnmodifiableList());
 
     assertEquals(scenario.result, result);
 

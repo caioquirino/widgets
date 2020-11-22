@@ -1,13 +1,13 @@
 package com.miro.testtask.widgets.repository;
 
 import com.miro.testtask.widgets.model.WidgetModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.lang.ref.Cleaner;
-import java.util.List;
-import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,6 +49,30 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
   @Override
   public List<WidgetModel> findAll() {
     return List.copyOf(this.widgetModelMap.values());
+  }
+
+  /**
+   * Returns a page with the requested page.
+   * Warning: This method does not support Ordering.
+   *
+   * @param pageable Paging config
+   * @return Paged results
+   */
+  @Override
+  public Page<WidgetModel> findPaged(Pageable pageable) {
+    return applyPaging(widgetModelMap, pageable);
+  }
+
+  public Page<WidgetModel> applyPaging(Map<Integer, WidgetModel> modelMap, Pageable pageable) {
+    var offset = pageable.getOffset();
+    var pageSize = pageable.getPageSize();
+
+    var resultList = modelMap.values().stream()
+        .skip(offset)
+        .limit(pageSize)
+        .collect(Collectors.toUnmodifiableList());
+
+    return new PageImpl<>(resultList, pageable, modelMap.size());
   }
 
   @Override
