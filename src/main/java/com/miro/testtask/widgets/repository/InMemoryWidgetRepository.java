@@ -1,5 +1,6 @@
 package com.miro.testtask.widgets.repository;
 
+import com.miro.testtask.widgets.model.WidgetFilter;
 import com.miro.testtask.widgets.model.WidgetModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -7,9 +8,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.lang.ref.Cleaner;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Cleanable {
@@ -60,19 +66,50 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
    */
   @Override
   public Page<WidgetModel> findPaged(Pageable pageable) {
-    return applyPaging(widgetModelMap, pageable);
-  }
-
-  public Page<WidgetModel> applyPaging(Map<Integer, WidgetModel> modelMap, Pageable pageable) {
-    var offset = pageable.getOffset();
-    var pageSize = pageable.getPageSize();
-
-    var resultList = modelMap.values().stream()
-        .skip(offset)
-        .limit(pageSize)
+    var pagedList = applyPaging(widgetModelMap.values().stream(), pageable)
         .collect(Collectors.toUnmodifiableList());
 
-    return new PageImpl<>(resultList, pageable, modelMap.size());
+    return new PageImpl<>(pagedList, pageable, widgetModelMap.size());
+  }
+
+  /**
+   * Returns a page with the requested page.
+   * Warning: This method does not support Ordering.
+   *
+   * @param pageable Paging config
+   * @param filter   Filter config
+   * @return Filtered and paged results
+   */
+  @Override
+  public Page<WidgetModel> findFilteredPaged(Pageable pageable, WidgetFilter filter) {
+    var filteredSize = new AtomicInteger(0);
+
+    var filteredStream = applyFiltering(widgetModelMap.values().stream(), filter)
+        .peek(x -> filteredSize.incrementAndGet());
+
+    var pagedStream = applyPaging(filteredStream, pageable);
+
+    return new PageImpl<>(
+        pagedStream.collect(Collectors.toUnmodifiableList()),
+        pageable,
+        filteredSize.get()
+    );
+  }
+
+  public Stream<WidgetModel> applyPaging(Stream<WidgetModel> widgetStream, Pageable pageable) {
+    return widgetStream
+        .skip(pageable.getOffset())
+        .limit(pageable.getPageSize());
+  }
+
+  public Stream<WidgetModel> applyFiltering(Stream<WidgetModel> widgetStream, WidgetFilter filter) {
+    return filter == null ? widgetStream : widgetStream
+        .filter(widget ->
+            widget.getCoordinate().getX() >= filter.getX() &&
+                widget.getCoordinate().getY() >= filter.getY() &&
+                widget.getWidth() + widget.getCoordinate().getX() <= filter.getWidth() + filter.getX() &&
+                widget.getHeight() + widget.getCoordinate().getY() <= filter.getHeight() + filter.getY()
+        );
   }
 
   @Override

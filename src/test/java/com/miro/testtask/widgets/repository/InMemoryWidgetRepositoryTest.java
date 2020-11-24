@@ -1,6 +1,7 @@
 package com.miro.testtask.widgets.repository;
 
 import com.miro.testtask.widgets.model.Coordinate;
+import com.miro.testtask.widgets.model.WidgetFilter;
 import com.miro.testtask.widgets.model.WidgetModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -186,5 +187,54 @@ class InMemoryWidgetRepositoryTest {
     assertEquals(25, page4.getTotalElements());
     assertEquals(3, page4.getTotalPages());
     assertEquals(List.of(), page4.getContent());
+  }
+
+  @Test
+  public void testFindAllWithFilter() {
+    repository.clean();
+
+    var widgetList = List.of(
+        WidgetModel.builder()
+            .coordinate(Coordinate.builder().x(0).y(0).build())
+            .height(100)
+            .width(100)
+            .zindex(1)
+            .build(),
+        WidgetModel.builder()
+            .coordinate(Coordinate.builder().x(0).y(50).build())
+            .height(100)
+            .width(100)
+            .zindex(2)
+            .build(),
+        WidgetModel.builder()
+            .coordinate(Coordinate.builder().x(50).y(50).build())
+            .height(100)
+            .width(100)
+            .zindex(3)
+            .build()
+    ).stream()
+        .map(repository::create)
+        .collect(Collectors.toUnmodifiableList());
+
+    var result = repository.findFilteredPaged(
+        PageRequest.of(0, 10),
+        WidgetFilter
+            .builder()
+            .x(0)
+            .y(0)
+            .width(100)
+            .height(150)
+            .build()
+    );
+
+    assertEquals(
+        widgetList.
+            stream()
+            .limit(2)
+            .collect(Collectors.toUnmodifiableList()),
+        result.getContent()
+    );
+    assertEquals(2, result.getTotalElements());
+    assertEquals(1, result.getTotalPages());
   }
 }

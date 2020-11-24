@@ -1,6 +1,7 @@
 package com.miro.testtask.widgets.service;
 
 import com.miro.testtask.widgets.model.Coordinate;
+import com.miro.testtask.widgets.model.WidgetFilter;
 import com.miro.testtask.widgets.model.WidgetModel;
 import com.miro.testtask.widgets.repository.WidgetRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -69,6 +70,29 @@ class WidgetServiceTest {
     var result = widgetService.findPaged(pageable);
 
     verify(widgetRepository, times(1)).findPaged(eq(pageable));
+    assertEquals(returnedPage, result);
+  }
+
+  @Test
+  void findFilteredPaged() {
+    var pageable = PageRequest.of(0, 1);
+    var filter = WidgetFilter
+        .builder()
+        .y(0).x(0)
+        .height(1000).width(1000)
+        .build();
+
+    var returnedPage = new PageImpl<>(
+        fixtures.stream().limit(1).collect(Collectors.toUnmodifiableList()),
+        pageable,
+        fixtures.size()
+    );
+
+    when(widgetRepository.findFilteredPaged(eq(pageable), eq(filter))).thenReturn(returnedPage);
+
+    var result = widgetService.findFilteredPaged(pageable, filter);
+
+    verify(widgetRepository, times(1)).findFilteredPaged(eq(pageable), eq(filter));
     assertEquals(returnedPage, result);
   }
 

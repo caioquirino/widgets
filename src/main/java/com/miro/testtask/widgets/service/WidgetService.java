@@ -1,10 +1,12 @@
 package com.miro.testtask.widgets.service;
 
 
+import com.miro.testtask.widgets.model.WidgetFilter;
 import com.miro.testtask.widgets.model.WidgetModel;
 import com.miro.testtask.widgets.repository.WidgetRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.Deque;
@@ -26,6 +28,10 @@ public class WidgetService {
 
   public Page<WidgetModel> findPaged(Pageable pageable) {
     return repository.findPaged(pageable);
+  }
+
+  public Page<WidgetModel> findFilteredPaged(Pageable pageable, @Nullable WidgetFilter filter) {
+    return repository.findFilteredPaged(pageable, filter);
   }
 
   public WidgetModel create(WidgetModel widgetModel) {

@@ -1,5 +1,6 @@
 package com.miro.testtask.widgets.controller;
 
+import com.miro.testtask.widgets.model.WidgetFilter;
 import com.miro.testtask.widgets.model.WidgetModel;
 import com.miro.testtask.widgets.service.WidgetService;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,14 +35,29 @@ public class WidgetController {
   @RequestMapping(path = "/v1/widget/list")
   public List<WidgetModel> findAll(
       @RequestParam @Nullable Integer page,
-      @RequestParam @Nullable Integer size) {
+      @RequestParam @Nullable Integer pageSize,
+      @RequestParam @Nullable Integer filterX,
+      @RequestParam @Nullable Integer filterY,
+      @RequestParam @Nullable Integer filterWidth,
+      @RequestParam @Nullable Integer filterHeight
+  ) {
+    var pageRequest = PageRequest.of(
+        page == null ? 0 : page,
+        pageSize == null ? defaultPageSize : pageSize
+    );
+    var filter = filterX != null &&
+        filterY != null &&
+        filterWidth != null &&
+        filterHeight != null ?
+        WidgetFilter.
+            builder()
+            .x(filterX)
+            .y(filterY)
+            .width(filterWidth)
+            .height(filterHeight)
+            .build() : null;
 
-    return widgetService.findPaged(
-        PageRequest.of(
-            page == null ? 0 : page,
-            size == null ? defaultPageSize : size
-        )
-    ).getContent();
+    return widgetService.findFilteredPaged(pageRequest, filter).getContent();
   }
 
   @RequestMapping(path = "/v1/widget", method = RequestMethod.PATCH)

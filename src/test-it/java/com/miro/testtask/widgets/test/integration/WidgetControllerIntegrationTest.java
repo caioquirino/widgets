@@ -61,7 +61,6 @@ public class WidgetControllerIntegrationTest {
     assertEquals(0, createdWidget.size());
   }
 
-
   @Test
   public void testFindAllWithPaging() throws Exception {
     var widgetList = IntStream.range(1, 20).mapToObj(i ->
@@ -76,7 +75,7 @@ public class WidgetControllerIntegrationTest {
         .collect(Collectors.toUnmodifiableList());
 
     var createdWidget = objectMapper.readValue(
-        mockMvc.perform(get("/v1/widget/list?page=1&size=10"))
+        mockMvc.perform(get("/v1/widget/list?page=1&pageSize=10"))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString(),
         new TypeReference<List<WidgetModel>>() {
@@ -88,6 +87,48 @@ public class WidgetControllerIntegrationTest {
             stream()
             .skip(10)
             .limit(10)
+            .collect(Collectors.toUnmodifiableList()),
+        createdWidget
+    );
+  }
+
+  @Test
+  public void testFindAllWithFilter() throws Exception {
+    var widgetList = List.of(
+        WidgetModel.builder()
+            .coordinate(Coordinate.builder().x(0).y(0).build())
+            .height(100)
+            .width(100)
+            .zindex(1)
+            .build(),
+        WidgetModel.builder()
+            .coordinate(Coordinate.builder().x(0).y(50).build())
+            .height(100)
+            .width(100)
+            .zindex(2)
+            .build(),
+        WidgetModel.builder()
+            .coordinate(Coordinate.builder().x(50).y(50).build())
+            .height(100)
+            .width(100)
+            .zindex(3)
+            .build()
+    ).stream()
+        .map(widgetRepository::create)
+        .collect(Collectors.toUnmodifiableList());
+
+    var createdWidget = objectMapper.readValue(
+        mockMvc.perform(get("/v1/widget/list?filterX=0&filterY=0&filterWidth=100&filterHeight=150"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString(),
+        new TypeReference<List<WidgetModel>>() {
+        }
+    );
+
+    assertEquals(
+        widgetList.
+            stream()
+            .limit(2)
             .collect(Collectors.toUnmodifiableList()),
         createdWidget
     );

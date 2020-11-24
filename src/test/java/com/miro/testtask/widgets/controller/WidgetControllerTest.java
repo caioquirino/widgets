@@ -53,11 +53,18 @@ class WidgetControllerTest {
         widgetList.size()
     );
 
-    when(widgetService.findPaged(eq(pageable))).thenReturn(returnedPage);
+    when(widgetService.findFilteredPaged(eq(pageable), isNull())).thenReturn(returnedPage);
 
-    var result = widgetController.findAll(null, 1);
+    var result = widgetController.findAll(
+        0,
+        1,
+        null,
+        null,
+        null,
+        null
+    );
 
-    verify(widgetService, times(1)).findPaged(eq(pageable));
+    verify(widgetService, times(1)).findFilteredPaged(eq(pageable), isNull());
     assertEquals(returnedPage.getContent(), result);
   }
 
