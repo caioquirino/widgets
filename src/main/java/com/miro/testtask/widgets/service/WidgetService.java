@@ -3,6 +3,8 @@ package com.miro.testtask.widgets.service;
 
 import com.miro.testtask.widgets.model.WidgetModel;
 import com.miro.testtask.widgets.repository.WidgetRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Deque;
@@ -20,6 +22,10 @@ public class WidgetService {
 
   public List<WidgetModel> findAll() {
     return repository.findAll();
+  }
+
+  public Page<WidgetModel> findPaged(Pageable pageable) {
+    return repository.findPaged(pageable);
   }
 
   public WidgetModel create(WidgetModel widgetModel) {

@@ -5,9 +5,12 @@ import com.miro.testtask.widgets.model.WidgetModel;
 import com.miro.testtask.widgets.repository.WidgetRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -49,6 +52,24 @@ class WidgetServiceTest {
 
     verify(widgetRepository, times(1)).findAll();
     assertEquals(fixtures, result);
+  }
+
+  @Test
+  void findPaged() {
+    var pageable = PageRequest.of(0, 1);
+
+    var returnedPage = new PageImpl<>(
+        fixtures.stream().limit(1).collect(Collectors.toUnmodifiableList()),
+        pageable,
+        fixtures.size()
+    );
+
+    when(widgetRepository.findPaged(eq(pageable))).thenReturn(returnedPage);
+
+    var result = widgetService.findPaged(pageable);
+
+    verify(widgetRepository, times(1)).findPaged(eq(pageable));
+    assertEquals(returnedPage, result);
   }
 
   @Test

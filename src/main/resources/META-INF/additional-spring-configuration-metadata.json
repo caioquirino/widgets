@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "widgets.page_size.default",
+      "type": "java.lang.String",
+      "description": "Define a default pagination size for the Widget list methods."
+    }
+  ]
+}

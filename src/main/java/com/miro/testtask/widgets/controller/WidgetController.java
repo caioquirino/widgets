@@ -2,10 +2,10 @@ package com.miro.testtask.widgets.controller;
 
 import com.miro.testtask.widgets.model.WidgetModel;
 import com.miro.testtask.widgets.service.WidgetService;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,9 +14,15 @@ public class WidgetController {
 
   private final WidgetService widgetService;
 
+  private final int defaultPageSize;
+
   public WidgetController(
-      WidgetService widgetService
+      WidgetService widgetService,
+
+      @Value("${widgets.page_size.default}")
+          int defaultPageSize
   ) {
+    this.defaultPageSize = defaultPageSize;
     this.widgetService = widgetService;
   }
 
@@ -26,8 +32,16 @@ public class WidgetController {
   }
 
   @RequestMapping(path = "/v1/widget/list")
-  public List<WidgetModel> findAll() {
-    return widgetService.findAll();
+  public List<WidgetModel> findAll(
+      @RequestParam @Nullable Integer page,
+      @RequestParam @Nullable Integer size) {
+
+    return widgetService.findPaged(
+        PageRequest.of(
+            page == null ? 0 : page,
+            size == null ? defaultPageSize : size
+        )
+    ).getContent();
   }
 
   @RequestMapping(path = "/v1/widget", method = RequestMethod.PATCH)

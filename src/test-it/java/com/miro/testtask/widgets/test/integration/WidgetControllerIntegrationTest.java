@@ -1,5 +1,6 @@
 package com.miro.testtask.widgets.test.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miro.testtask.widgets.model.Coordinate;
 import com.miro.testtask.widgets.model.WidgetModel;
@@ -42,15 +43,54 @@ public class WidgetControllerIntegrationTest {
 
   @AfterEach
   public void cleanup() {
-    ((Cleaner.Cleanable)widgetRepository).clean();
+    ((Cleaner.Cleanable) widgetRepository).clean();
     assertEquals(0, widgetRepository.findAll().size());
   }
 
+
   @Test
   public void testFindAllWithEmptyEntity() throws Exception {
-    mockMvc.perform(get("/v1/widget/list"))
-        .andExpect(content().string("[]"))
-        .andExpect(status().isOk());
+    var createdWidget = objectMapper.readValue(
+        mockMvc.perform(get("/v1/widget/list"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString(),
+        new TypeReference<List<WidgetModel>>() {
+        }
+    );
+
+    assertEquals(0, createdWidget.size());
+  }
+
+
+  @Test
+  public void testFindAllWithPaging() throws Exception {
+    var widgetList = IntStream.range(1, 20).mapToObj(i ->
+        WidgetModel.builder()
+            .coordinate(Coordinate.builder().x(4).y(5).build())
+            .height(30)
+            .width(300)
+            .zindex(i)
+            .build()
+    )
+        .map(widgetRepository::create)
+        .collect(Collectors.toUnmodifiableList());
+
+    var createdWidget = objectMapper.readValue(
+        mockMvc.perform(get("/v1/widget/list?page=1&size=10"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString(),
+        new TypeReference<List<WidgetModel>>() {
+        }
+    );
+
+    assertEquals(
+        widgetList.
+            stream()
+            .skip(10)
+            .limit(10)
+            .collect(Collectors.toUnmodifiableList()),
+        createdWidget
+    );
   }
 
   @Test
@@ -87,7 +127,7 @@ public class WidgetControllerIntegrationTest {
         .zindex(3)
         .build());
 
-    var expectedSize = widgetRepository.findAll().size() -1;
+    var expectedSize = widgetRepository.findAll().size() - 1;
 
     mockMvc.perform(
         delete("/v1/widget")
