@@ -65,11 +65,11 @@ class WidgetServiceTest {
         fixtures.size()
     );
 
-    when(widgetRepository.findPaged(eq(pageable))).thenReturn(returnedPage);
+    when(widgetRepository.findAll(eq(pageable))).thenReturn(returnedPage);
 
     var result = widgetService.findPaged(pageable);
 
-    verify(widgetRepository, times(1)).findPaged(eq(pageable));
+    verify(widgetRepository, times(1)).findAll(eq(pageable));
     assertEquals(returnedPage, result);
   }
 
@@ -88,11 +88,11 @@ class WidgetServiceTest {
         fixtures.size()
     );
 
-    when(widgetRepository.findFilteredPaged(eq(pageable), eq(filter))).thenReturn(returnedPage);
+    when(widgetRepository.FindAll(eq(pageable), eq(filter))).thenReturn(returnedPage);
 
     var result = widgetService.findFilteredPaged(pageable, filter);
 
-    verify(widgetRepository, times(1)).findFilteredPaged(eq(pageable), eq(filter));
+    verify(widgetRepository, times(1)).FindAll(eq(pageable), eq(filter));
     assertEquals(returnedPage, result);
   }
 

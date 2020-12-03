@@ -153,7 +153,7 @@ class InMemoryWidgetRepositoryTest {
 
     Pageable pageRequest = PageRequest.of(0, 10);
 
-    var page1 = repository.findPaged(pageRequest);
+    var page1 = repository.findAll(pageRequest);
 
     assertEquals(0, page1.getNumber());
     assertEquals(10, page1.getNumberOfElements());
@@ -162,7 +162,7 @@ class InMemoryWidgetRepositoryTest {
     assertEquals(createdItems.stream().limit(10).collect(Collectors.toList()), page1.getContent());
 
     pageRequest = pageRequest.next();
-    var page2 = repository.findPaged(pageRequest);
+    var page2 = repository.findAll(pageRequest);
 
     assertEquals(1, page2.getNumber());
     assertEquals(10, page2.getNumberOfElements());
@@ -171,7 +171,7 @@ class InMemoryWidgetRepositoryTest {
     assertEquals(createdItems.stream().skip(10).limit(10).collect(Collectors.toList()), page2.getContent());
 
     pageRequest = pageRequest.next();
-    var page3 = repository.findPaged(pageRequest);
+    var page3 = repository.findAll(pageRequest);
 
     assertEquals(2, page3.getNumber());
     assertEquals(5, page3.getNumberOfElements());
@@ -180,7 +180,7 @@ class InMemoryWidgetRepositoryTest {
     assertEquals(createdItems.stream().skip(20).limit(5).collect(Collectors.toList()), page3.getContent());
 
     pageRequest = pageRequest.next();
-    var page4 = repository.findPaged(pageRequest);
+    var page4 = repository.findAll(pageRequest);
 
     assertEquals(3, page4.getNumber());
     assertEquals(0, page4.getNumberOfElements());
@@ -216,7 +216,7 @@ class InMemoryWidgetRepositoryTest {
         .map(repository::create)
         .collect(Collectors.toUnmodifiableList());
 
-    var result = repository.findFilteredPaged(
+    var result = repository.FindAll(
         PageRequest.of(0, 10),
         WidgetFilter
             .builder()

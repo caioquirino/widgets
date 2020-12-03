@@ -5,6 +5,7 @@ import com.miro.testtask.widgets.model.WidgetModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.lang.ref.Cleaner;
@@ -17,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Repository
+@Component
 public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Cleanable {
 
   private final SortedMap<Integer, WidgetModel> widgetModelMap;
@@ -65,7 +66,7 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
    * @return Paged results
    */
   @Override
-  public Page<WidgetModel> findPaged(Pageable pageable) {
+  public Page<WidgetModel> findAll(Pageable pageable) {
     var pagedList = applyPaging(widgetModelMap.values().stream(), pageable)
         .collect(Collectors.toUnmodifiableList());
 
@@ -81,7 +82,7 @@ public class InMemoryWidgetRepository implements WidgetRepository, Cleaner.Clean
    * @return Filtered and paged results
    */
   @Override
-  public Page<WidgetModel> findFilteredPaged(Pageable pageable, WidgetFilter filter) {
+  public Page<WidgetModel> FindAll(Pageable pageable, WidgetFilter filter) {
     var filteredSize = new AtomicInteger(0);
 
     var filteredStream = applyFiltering(widgetModelMap.values().stream(), filter)

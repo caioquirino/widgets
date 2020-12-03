@@ -12,9 +12,9 @@ import java.util.Optional;
 public interface WidgetRepository {
   List<WidgetModel> findAll();
 
-  Page<WidgetModel> findPaged(Pageable pageable);
+  Page<WidgetModel> findAll(Pageable pageable);
 
-  Page<WidgetModel> findFilteredPaged(Pageable pageable, @Nullable WidgetFilter filter);
+  Page<WidgetModel> FindAll(Pageable pageable, @Nullable WidgetFilter filter);
 
   Optional<WidgetModel> findByZindex(int zindex);
 

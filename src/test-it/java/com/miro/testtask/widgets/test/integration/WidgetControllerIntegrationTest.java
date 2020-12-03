@@ -43,6 +43,7 @@ public class WidgetControllerIntegrationTest {
 
   @AfterEach
   public void cleanup() {
+    System.out.println("CLEANING!");
     ((Cleaner.Cleanable) widgetRepository).clean();
     assertEquals(0, widgetRepository.findAll().size());
   }

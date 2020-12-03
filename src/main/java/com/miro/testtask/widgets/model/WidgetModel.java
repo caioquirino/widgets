@@ -3,20 +3,36 @@ package com.miro.testtask.widgets.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
+import javax.persistence.*;
+
+@Entity
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder(toBuilder = true)
 public class WidgetModel {
 
-  private final Long id;
+  @Id
+  @GeneratedValue(strategy=GenerationType.AUTO)
+  private Long id;
 
-  private final Integer zindex;
+  @Column(unique = true)
+  private Integer zindex;
+
+  @Embedded
   @NonNull
-  private final Coordinate coordinate;
+  @Column
+  private Coordinate coordinate;
+
   @NonNull
-  private final int width;
+  @Column
+  private int width;
+
   @NonNull
-  private final int height;
+  @Column
+  private int height;
+
 }

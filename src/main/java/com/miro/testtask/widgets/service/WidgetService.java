@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -27,13 +28,14 @@ public class WidgetService {
   }
 
   public Page<WidgetModel> findPaged(Pageable pageable) {
-    return repository.findPaged(pageable);
+    return repository.findAll(pageable);
   }
 
   public Page<WidgetModel> findFilteredPaged(Pageable pageable, @Nullable WidgetFilter filter) {
-    return repository.findFilteredPaged(pageable, filter);
+    return repository.FindAll(pageable, filter);
   }
 
+  @Transactional
   public WidgetModel create(WidgetModel widgetModel) {
     WidgetModel newWidgetModel = widgetModel;
 
@@ -46,6 +48,7 @@ public class WidgetService {
     return repository.create(newWidgetModel);
   }
 
+  @Transactional
   public WidgetModel update(WidgetModel widgetModel) {
     fixZindex(widgetModel);
     return repository.update(widgetModel);
@@ -71,6 +74,7 @@ public class WidgetService {
   }
 
 
+  @Transactional
   public void delete(WidgetModel widgetModel) {
     repository.delete(widgetModel);
   }
